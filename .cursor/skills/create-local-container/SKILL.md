@@ -1,9 +1,10 @@
 ---
 name: create-local-container
 description: >-
-  Build and run this Spring Boot app as a local Docker container using the
-  Docker CLI. Use when the user asks to containerize, dockerize, or run the
-  app in Docker locally, or invokes the create-local-container skill.
+  Build and create a local Docker container for this Spring Boot app using the
+  Docker CLI (does not start the container). Use when the user asks to
+  containerize, dockerize, or create a local Docker container, or invokes the
+  create-local-container skill.
 ---
 
 # Create Local Container
@@ -36,10 +37,10 @@ mvn clean package -DskipTests
 
 ### 3. Build the image
 
-Use a fixed local image tag for this project:
+Use a fixed local image tag for this project. Always pass `--platform linux/amd64` — the `eclipse-temurin:17-jre-alpine` base image has no ARM64 manifest, so this is required on Apple Silicon:
 
 ```bash
-docker build -t digitalclock:local .
+docker build --platform linux/amd64 -t digitalclock:local .
 ```
 
 ### 4. Replace an existing container (same name)
@@ -52,12 +53,12 @@ docker rm -f CONTAINER_NAME
 
 Only run when `docker ps -a --format '{{.Names}}' | grep -x CONTAINER_NAME` matches.
 
-### 5. Run the container
+### 5. Create the container (do not start)
 
-Map host port `8080` to the app (`server.port=8080`):
+Map host port `8080` to the app (`server.port=8080`). Use `docker create` — **do not** use `docker run`:
 
 ```bash
-docker run -d --name CONTAINER_NAME -p 8080:8080 digitalclock:local
+docker create --name CONTAINER_NAME -p 8080:8080 digitalclock:local
 ```
 
 Replace `CONTAINER_NAME` with the user-provided name.
@@ -65,15 +66,15 @@ Replace `CONTAINER_NAME` with the user-provided name.
 ### 6. Verify
 
 ```bash
-docker ps --filter name=CONTAINER_NAME
-curl -s -o /dev/null -w "%{http_code}" http://localhost:8080/
+docker ps -a --filter name=CONTAINER_NAME
 ```
 
-Report the container name, image (`digitalclock:local`), and URL `http://localhost:8080/`.
+Report the container name, image (`digitalclock:local`), and that it was created but **not started**. To start it later: `docker start CONTAINER_NAME` → `http://localhost:8080/`.
 
 ## Useful follow-up commands
 
 ```bash
+docker start CONTAINER_NAME
 docker logs -f CONTAINER_NAME
 docker stop CONTAINER_NAME
 docker rm CONTAINER_NAME
@@ -85,6 +86,7 @@ docker rm CONTAINER_NAME
 |------|-------|
 | JAR | `target/digitalclock-1.0.0.jar` |
 | Base image | `eclipse-temurin:17-jre-alpine` |
+| Build platform | `linux/amd64` (required on ARM64 hosts) |
 | Exposed port | `8080` |
 | Image tag | `digitalclock:local` |
 
