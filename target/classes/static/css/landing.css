@@ -1,0 +1,187 @@
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+:root {
+    --bg-deep: #020308;
+    --bg-mid: #06080f;
+    --accent-cyan: #2a9aaa;
+    --accent-violet: #6b5b95;
+    --accent-pink: #9a4d6e;
+    --text-primary: #c8cdd6;
+    --text-bright: #e4e8ef;
+    --text-dim: #5c6470;
+    --text-muted: #3d4450;
+    --glass: rgba(4, 6, 10, 0.82);
+    --glass-border: rgba(255, 255, 255, 0.05);
+    --glow-cyan: rgba(42, 154, 170, 0.12);
+    --glow-violet: rgba(107, 91, 149, 0.1);
+}
+
+html,
+body {
+    min-height: 100%;
+}
+
+body {
+    font-family: "DM Sans", system-ui, sans-serif;
+    color: var(--text-primary);
+    background: var(--bg-deep);
+    overflow-x: hidden;
+}
+
+.bg {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    background:
+        radial-gradient(ellipse 70% 45% at 50% -5%, rgba(42, 154, 170, 0.04), transparent 55%),
+        radial-gradient(ellipse 55% 35% at 100% 100%, rgba(107, 91, 149, 0.05), transparent 50%),
+        radial-gradient(ellipse 45% 30% at 0% 85%, rgba(154, 77, 110, 0.03), transparent 45%),
+        linear-gradient(180deg, var(--bg-deep) 0%, var(--bg-mid) 50%, #010204 100%);
+}
+
+.orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(100px);
+    opacity: 0.22;
+}
+
+.orb--1 {
+    width: 320px;
+    height: 320px;
+    top: 12%;
+    left: 18%;
+    background: var(--accent-cyan);
+}
+
+.orb--2 {
+    width: 260px;
+    height: 260px;
+    bottom: 18%;
+    right: 12%;
+    background: var(--accent-violet);
+}
+
+.orb--3 {
+    width: 180px;
+    height: 180px;
+    bottom: 35%;
+    left: 42%;
+    background: var(--accent-pink);
+}
+
+.page {
+    position: relative;
+    z-index: 1;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1.25rem;
+}
+
+.landing-card {
+    width: min(480px, 100%);
+    padding: 3rem 2.25rem;
+    text-align: center;
+    border-radius: 28px;
+    background: var(--glass);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    box-shadow:
+        0 0 0 1px rgba(0, 0, 0, 0.6) inset,
+        0 32px 64px rgba(0, 0, 0, 0.7),
+        0 0 40px var(--glow-cyan),
+        0 0 80px var(--glow-violet);
+}
+
+.landing-card__eyebrow {
+    margin-bottom: 0.75rem;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--accent-cyan);
+}
+
+.landing-card__title {
+    font-family: "Orbitron", "Segoe UI", sans-serif;
+    font-size: clamp(1.75rem, 6vw, 2.5rem);
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    color: var(--text-bright);
+    text-shadow: 0 0 24px var(--glow-cyan);
+}
+
+.landing-card__subtitle {
+    margin-top: 1rem;
+    font-size: 1rem;
+    line-height: 1.6;
+    color: var(--text-dim);
+}
+
+.landing-card__actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+    margin-top: 2.25rem;
+}
+
+.landing-card__cta {
+    display: inline-block;
+    padding: 0.95rem 2.25rem;
+    font-family: inherit;
+    font-size: 0.95rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-decoration: none;
+    color: var(--text-bright);
+    background: linear-gradient(135deg, rgba(42, 154, 170, 0.25) 0%, rgba(107, 91, 149, 0.2) 100%);
+    border: 1px solid rgba(42, 154, 170, 0.35);
+    border-radius: 999px;
+    box-shadow: 0 0 24px var(--glow-cyan);
+    transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.landing-card__cta:hover {
+    transform: translateY(-2px);
+    border-color: rgba(42, 154, 170, 0.55);
+    box-shadow: 0 0 32px rgba(42, 154, 170, 0.25);
+}
+
+.landing-card__cta:focus-visible {
+    outline: none;
+    box-shadow:
+        0 0 0 3px rgba(42, 154, 170, 0.2),
+        0 0 32px rgba(42, 154, 170, 0.25);
+}
+
+.landing-card__cta:active {
+    transform: translateY(0);
+}
+
+.landing-card__cta--secondary {
+    background: linear-gradient(135deg, rgba(107, 91, 149, 0.22) 0%, rgba(154, 77, 110, 0.15) 100%);
+    border-color: rgba(107, 91, 149, 0.35);
+    box-shadow: 0 0 24px var(--glow-violet);
+}
+
+.landing-card__cta--secondary:hover {
+    border-color: rgba(107, 91, 149, 0.55);
+    box-shadow: 0 0 32px rgba(107, 91, 149, 0.2);
+}
+
+@media (min-width: 420px) {
+    .landing-card__actions {
+        flex-direction: row;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+}

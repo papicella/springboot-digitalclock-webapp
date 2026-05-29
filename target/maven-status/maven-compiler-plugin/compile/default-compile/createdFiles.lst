@@ -1,0 +1,12 @@
+com/digitalclock/DigitalClockApplication.class
+com/digitalclock/weather/CityWeatherView.class
+com/digitalclock/weather/OpenMeteoResponse$CurrentWeather.class
+com/digitalclock/city/City.class
+com/digitalclock/weather/OpenMeteoResponse.class
+com/digitalclock/city/CityCatalog.class
+com/digitalclock/web/ClockController.class
+com/digitalclock/weather/WeatherCodeMapper.class
+com/digitalclock/weather/WeatherService.class
+com/digitalclock/weather/OpenMeteoResponse$CurrentUnits.class
+com/digitalclock/web/WeatherController.class
+com/digitalclock/web/HomeController.class

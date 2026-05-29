@@ -1,0 +1,290 @@
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+:root {
+    --bg-deep: #020308;
+    --bg-mid: #06080f;
+    --accent-cyan: #2a9aaa;
+    --accent-violet: #6b5b95;
+    --accent-pink: #9a4d6e;
+    --text-primary: #c8cdd6;
+    --text-bright: #e4e8ef;
+    --text-dim: #5c6470;
+    --text-muted: #3d4450;
+    --glass: rgba(4, 6, 10, 0.82);
+    --glass-border: rgba(255, 255, 255, 0.05);
+    --glow-cyan: rgba(42, 154, 170, 0.12);
+    --glow-violet: rgba(107, 91, 149, 0.1);
+    --error: #c97a8a;
+}
+
+html,
+body {
+    min-height: 100%;
+}
+
+body {
+    font-family: "DM Sans", system-ui, sans-serif;
+    color: var(--text-primary);
+    background: var(--bg-deep);
+}
+
+.bg {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    background:
+        radial-gradient(ellipse 70% 45% at 50% -5%, rgba(42, 154, 170, 0.04), transparent 55%),
+        radial-gradient(ellipse 55% 35% at 100% 100%, rgba(107, 91, 149, 0.05), transparent 50%),
+        linear-gradient(180deg, var(--bg-deep) 0%, var(--bg-mid) 50%, #010204 100%);
+}
+
+.orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(100px);
+    opacity: 0.22;
+}
+
+.orb--1 {
+    width: 300px;
+    height: 300px;
+    top: 8%;
+    left: 10%;
+    background: var(--accent-cyan);
+}
+
+.orb--2 {
+    width: 240px;
+    height: 240px;
+    bottom: 10%;
+    right: 8%;
+    background: var(--accent-violet);
+}
+
+.orb--3 {
+    width: 180px;
+    height: 180px;
+    bottom: 40%;
+    left: 45%;
+    background: var(--accent-pink);
+}
+
+.page {
+    position: relative;
+    z-index: 1;
+    max-width: 520px;
+    margin: 0 auto;
+    padding: 2rem 1.25rem 3rem;
+}
+
+.page-header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+}
+
+.page-header__back {
+    display: inline-block;
+    margin-bottom: 1.25rem;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--accent-cyan);
+    text-decoration: none;
+    transition: opacity 0.2s ease;
+}
+
+.page-header__back:hover {
+    opacity: 0.8;
+}
+
+.page-header__title {
+    font-family: "Orbitron", "Segoe UI", sans-serif;
+    font-size: clamp(1.5rem, 5vw, 2.25rem);
+    font-weight: 700;
+    color: var(--text-bright);
+    text-shadow: 0 0 20px var(--glow-cyan);
+}
+
+.page-header__subtitle {
+    margin-top: 0.6rem;
+    font-size: 0.95rem;
+    color: var(--text-dim);
+}
+
+.city-picker {
+    margin-bottom: 1.5rem;
+}
+
+.city-picker__label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+}
+
+.city-picker__field {
+    position: relative;
+}
+
+.city-picker__field::after {
+    content: "";
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    width: 0.5rem;
+    height: 0.5rem;
+    border-right: 2px solid var(--accent-cyan);
+    border-bottom: 2px solid var(--accent-cyan);
+    transform: translateY(-65%) rotate(45deg);
+    pointer-events: none;
+    opacity: 0.7;
+}
+
+.city-picker__select {
+    width: 100%;
+    appearance: none;
+    -webkit-appearance: none;
+    padding: 0.85rem 2.5rem 0.85rem 1rem;
+    font-family: inherit;
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--text-primary);
+    background: rgba(4, 6, 10, 0.9);
+    border: 1px solid var(--glass-border);
+    border-radius: 14px;
+    cursor: pointer;
+    transition: border-color 0.2s ease;
+}
+
+.city-picker__select:hover {
+    border-color: rgba(42, 154, 170, 0.22);
+}
+
+.city-picker__select:focus {
+    outline: none;
+    border-color: rgba(42, 154, 170, 0.3);
+    box-shadow: 0 0 0 3px rgba(42, 154, 170, 0.08);
+}
+
+.city-picker__select option {
+    background: #040608;
+    color: var(--text-primary);
+}
+
+.weather-card {
+    padding: 1.35rem 1.25rem 1.1rem;
+    border-radius: 20px;
+    background: var(--glass);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    box-shadow:
+        0 0 0 1px rgba(0, 0, 0, 0.5) inset,
+        0 16px 40px rgba(0, 0, 0, 0.5),
+        0 0 24px var(--glow-cyan);
+}
+
+.weather-card--error {
+    border-color: rgba(201, 122, 138, 0.25);
+    box-shadow:
+        0 0 0 1px rgba(0, 0, 0, 0.5) inset,
+        0 16px 40px rgba(0, 0, 0, 0.5);
+}
+
+.weather-card__header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.weather-card__city {
+    font-family: "Orbitron", "Segoe UI", sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text-bright);
+    letter-spacing: 0.02em;
+}
+
+.weather-card__timezone {
+    margin-top: 0.25rem;
+    font-size: 0.72rem;
+    color: var(--text-muted);
+}
+
+.weather-card__icon {
+    font-size: 2rem;
+    line-height: 1;
+    filter: drop-shadow(0 0 8px var(--glow-cyan));
+}
+
+.weather-card__hero {
+    margin-bottom: 1.1rem;
+}
+
+.weather-card__temp {
+    font-family: "Orbitron", "Segoe UI", sans-serif;
+    font-size: 2.75rem;
+    font-weight: 700;
+    color: var(--text-bright);
+    line-height: 1.1;
+}
+
+.weather-card__condition {
+    margin-top: 0.35rem;
+    font-size: 0.9rem;
+    color: var(--accent-cyan);
+}
+
+.weather-card__error {
+    font-size: 0.88rem;
+    color: var(--error);
+    margin-bottom: 0.5rem;
+}
+
+.weather-card__stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.65rem 1rem;
+}
+
+.stat dt {
+    font-size: 0.62rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+}
+
+.stat dd {
+    margin-top: 0.15rem;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--text-primary);
+    font-variant-numeric: tabular-nums;
+}
+
+.weather-card__footer {
+    display: flex;
+    justify-content: space-between;
+    gap: 0.5rem;
+    margin-top: 1rem;
+    padding-top: 0.85rem;
+    border-top: 1px solid var(--glass-border);
+    font-size: 0.72rem;
+    color: var(--text-muted);
+}
+
+.weather-card__footer time {
+    color: var(--text-dim);
+    font-variant-numeric: tabular-nums;
+}

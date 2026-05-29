@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>City Weather</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600&family=Orbitron:wght@500;700&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" th:href="@{/css/weather.css}"/>
+</head>
+<body>
+<div class="bg" aria-hidden="true">
+    <div class="orb orb--1"></div>
+    <div class="orb orb--2"></div>
+    <div class="orb orb--3"></div>
+</div>
+
+<main class="page">
+    <header class="page-header">
+        <a class="page-header__back" th:href="@{/}">← Home</a>
+        <h1 class="page-header__title">City Weather</h1>
+        <p class="page-header__subtitle">Current conditions for your selected city</p>
+    </header>
+
+    <form class="city-picker" method="get" th:action="@{/weather}">
+        <label class="city-picker__label" for="city-select">City</label>
+        <div class="city-picker__field">
+            <select
+                    id="city-select"
+                    name="city"
+                    class="city-picker__select"
+                    onchange="this.form.submit()">
+                <option
+                        th:each="option : ${cityOptions}"
+                        th:value="${option.id}"
+                        th:text="${option.displayName}"
+                        th:selected="${option.id == selectedCityId}">
+                    Melbourne, Australia
+                </option>
+            </select>
+        </div>
+    </form>
+
+    <article
+            class="weather-card"
+            th:classappend="${!weather.available} ? ' weather-card--error' : ''"
+            aria-label="Current weather">
+        <header class="weather-card__header">
+            <div class="weather-card__city-info">
+                <h2 class="weather-card__city" th:text="${weather.cityName}">Melbourne, Australia</h2>
+                <p class="weather-card__timezone" th:text="${weather.timezoneId}">Australia/Melbourne</p>
+            </div>
+            <span class="weather-card__icon" th:text="${weather.icon}" aria-hidden="true">☀</span>
+        </header>
+
+        <div class="weather-card__hero" th:if="${weather.available}">
+            <p class="weather-card__temp" th:text="${weather.temperature}">22°C</p>
+            <p class="weather-card__condition" th:text="${weather.condition}">Clear sky</p>
+        </div>
+
+        <p class="weather-card__error" th:if="${!weather.available}" th:text="${weather.errorMessage}">
+            Could not load weather data
+        </p>
+
+        <dl class="weather-card__stats" th:if="${weather.available}">
+            <div class="stat">
+                <dt>Feels like</dt>
+                <dd th:text="${weather.feelsLike}">—</dd>
+            </div>
+            <div class="stat">
+                <dt>Humidity</dt>
+                <dd th:text="${weather.humidity}">—</dd>
+            </div>
+            <div class="stat">
+                <dt>Precipitation</dt>
+                <dd th:text="${weather.precipitation}">—</dd>
+            </div>
+            <div class="stat">
+                <dt>Wind</dt>
+                <dd th:text="${weather.wind}">—</dd>
+            </div>
+            <div class="stat">
+                <dt>Wind direction</dt>
+                <dd th:text="${weather.windDirection}">—</dd>
+            </div>
+            <div class="stat">
+                <dt>Cloud cover</dt>
+                <dd th:text="${weather.cloudCover}">—</dd>
+            </div>
+            <div class="stat">
+                <dt>Pressure</dt>
+                <dd th:text="${weather.pressure}">—</dd>
+            </div>
+            <div class="stat">
+                <dt>Visibility</dt>
+                <dd th:text="${weather.visibility}">—</dd>
+            </div>
+            <div class="stat">
+                <dt>Day / night</dt>
+                <dd th:text="${weather.dayNight}">—</dd>
+            </div>
+        </dl>
+
+        <footer class="weather-card__footer" th:if="${weather.available}">
+            <span>Observed</span>
+            <time th:text="${weather.observedAt}">—</time>
+        </footer>
+    </article>
+</main>
+</body>
+</html>
