@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Digital Clock</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=Orbitron:wght@500;700&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" th:href="@{/css/clock.css}"/>
+</head>
+<body>
+<div class="bg" aria-hidden="true">
+    <div class="orb orb--1"></div>
+    <div class="orb orb--2"></div>
+    <div class="orb orb--3"></div>
+</div>
+
+<main class="page">
+    <header class="page-header">
+        <a class="page-header__back" th:href="@{/}">← Home</a>
+    </header>
+    <article class="clock-card">
+        <div class="badge">
+            <span class="badge__dot" aria-hidden="true"></span>
+            Live
+        </div>
+
+        <div class="clock-row">
+            <div class="clock-display" id="clock" role="timer" aria-live="polite" aria-atomic="true">
+                <span class="clock-display__segment" id="h1">0</span>
+                <span class="clock-display__segment" id="h2">0</span>
+                <span class="clock-display__colon" aria-hidden="true">:</span>
+                <span class="clock-display__segment" id="m1">0</span>
+                <span class="clock-display__segment" id="m2">0</span>
+                <span class="clock-display__colon" aria-hidden="true">:</span>
+                <span class="clock-display__segment" id="s1">0</span>
+                <span class="clock-display__segment" id="s2">0</span>
+            </div>
+            <span class="clock-display__period" id="period" aria-label="AM or PM">AM</span>
+        </div>
+
+        <p class="date-line" id="date">—</p>
+
+        <div class="controls">
+            <div class="control">
+                <label class="control__label" for="timezone-select">Timezone</label>
+                <div class="control__field">
+                    <select id="timezone-select" class="control__select" aria-describedby="timezone-hint">
+                        <option
+                                th:each="tz : ${timezones}"
+                                th:value="${tz}"
+                                th:text="${tz}"
+                                th:selected="${tz == timezone}">
+                            UTC
+                        </option>
+                    </select>
+                </div>
+                <p class="control__hint" id="timezone-hint">Choose a region — your selection is remembered.</p>
+            </div>
+        </div>
+
+        <div class="meta">
+            <div class="meta__item">
+                <span class="meta__label">Format</span>
+                <span class="meta__value">12-hour</span>
+            </div>
+            <div class="meta__item">
+                <span class="meta__label">Page loaded</span>
+                <span class="meta__value" th:text="${serverTime}">12:00:00 AM</span>
+            </div>
+        </div>
+    </article>
+
+    <p class="footer">Spring Boot · Thymeleaf · Java 17</p>
+</main>
+
+<script th:inline="javascript">
+    (function () {
+        const defaultTimezone = /*[[${timezone}]]*/ 'UTC';
+        const STORAGE_KEY = 'digitalclock.timezone';
+
+        const timezoneSelect = document.getElementById('timezone-select');
+        const segments = {
+            h1: document.getElementById('h1'),
+            h2: document.getElementById('h2'),
+            m1: document.getElementById('m1'),
+            m2: document.getElementById('m2'),
+            s1: document.getElementById('s1'),
+            s2: document.getElementById('s2')
+        };
+        const periodEl = document.getElementById('period');
+        const dateEl = document.getElementById('date');
+
+        let timezone = resolveTimezone();
+        let lastSecond = -1;
+        let timeFormatter;
+        let dateFormatter;
+
+        function resolveTimezone() {
+            const stored = localStorage.getItem(STORAGE_KEY);
+            if (stored && optionExists(stored)) {
+                return stored;
+            }
+            return defaultTimezone;
+        }
+
+        function optionExists(value) {
+            return Array.from(timezoneSelect.options).some(opt => opt.value === value);
+        }
+
+        function syncSelect() {
+            timezoneSelect.value = timezone;
+        }
+
+        function buildFormatters() {
+            timeFormatter = new Intl.DateTimeFormat('en-US', {
+                timeZone: timezone,
+                hour: 'numeric',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: true
+            });
+
+            dateFormatter = new Intl.DateTimeFormat('en-US', {
+                timeZone: timezone,
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+        }
+
+        function padPair(value) {
+            const str = String(value).padStart(2, '0');
+            return [str[0], str[1]];
+        }
+
+        function setSegment(el, value) {
+            if (el.textContent !== value) {
+                el.textContent = value;
+                el.classList.remove('tick');
+                void el.offsetWidth;
+                el.classList.add('tick');
+            }
+        }
+
+        function setPeriod(value) {
+            const next = value.toUpperCase();
+            if (periodEl.textContent !== next) {
+                periodEl.textContent = next;
+                periodEl.classList.remove('tick');
+                void periodEl.offsetWidth;
+                periodEl.classList.add('tick');
+            }
+        }
+
+        function tick() {
+            const now = new Date();
+            const parts = timeFormatter.formatToParts(now);
+            const hour = parts.find(p => p.type === 'hour')?.value ?? '12';
+            const minute = parts.find(p => p.type === 'minute')?.value ?? '00';
+            const second = parts.find(p => p.type === 'second')?.value ?? '00';
+            const dayPeriod = parts.find(p => p.type === 'dayPeriod')?.value ?? 'AM';
+
+            const [h1, h2] = padPair(hour);
+            const [m1, m2] = padPair(minute);
+            const [s1, s2] = padPair(second);
+
+            setSegment(segments.h1, h1);
+            setSegment(segments.h2, h2);
+            setSegment(segments.m1, m1);
+            setSegment(segments.m2, m2);
+            setSegment(segments.s1, s1);
+            setSegment(segments.s2, s2);
+            setPeriod(dayPeriod);
+
+            const sec = Number(second);
+            if (sec !== lastSecond) {
+                dateEl.textContent = dateFormatter.format(now);
+                lastSecond = sec;
+            }
+        }
+
+        function applyTimezone(next) {
+            timezone = next;
+            localStorage.setItem(STORAGE_KEY, timezone);
+            syncSelect();
+            buildFormatters();
+            lastSecond = -1;
+            tick();
+        }
+
+        syncSelect();
+        if (timezone !== defaultTimezone) {
+            timezoneSelect.value = timezone;
+        }
+
+        buildFormatters();
+        tick();
+        setInterval(tick, 250);
+
+        timezoneSelect.addEventListener('change', function () {
+            applyTimezone(timezoneSelect.value);
+        });
+    })();
+</script>
+</body>
+</html>
