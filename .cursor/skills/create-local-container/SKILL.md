@@ -2,18 +2,19 @@
 name: create-local-container
 description: >-
   Build and create a local Docker container for this Spring Boot app using the
-  Docker CLI (does not start the container). Use when the user asks to
+  Docker CLI (does not start the container). The user supplies a name used for
+  both the image tag and container name. Use when the user asks to
   containerize, dockerize, or create a local Docker container, or invokes the
   create-local-container skill.
 ---
 
 # Create Local Container
 
-Containerize this application with the Docker CLI. The user supplies the **container name** to use locally.
+Containerize this application with the Docker CLI. The user supplies a **name** that is used for both the built image tag and the container name — they must match.
 
 ## Required input
 
-- `CONTAINER_NAME` — Docker container name (e.g. `digitalclock-dev`). Ask if not provided.
+- `NAME` — Docker image tag and container name (e.g. `digitalclock-dev`). Ask if not provided.
 
 ## Workflow
 
@@ -37,47 +38,47 @@ mvn clean package -DskipTests
 
 ### 3. Build the image
 
-Use a fixed local image tag for this project. Always pass `--platform linux/amd64` — the `eclipse-temurin:17-jre-alpine` base image has no ARM64 manifest, so this is required on Apple Silicon:
+Tag the image with the user-supplied `NAME` (defaults to `:latest`). Always pass `--platform linux/amd64` — the `eclipse-temurin:17-jre-alpine` base image has no ARM64 manifest, so this is required on Apple Silicon:
 
 ```bash
-docker build --platform linux/amd64 -t digitalclock:local .
+docker build --platform linux/amd64 -t NAME .
 ```
 
-### 4. Replace an existing container (same name)
+Replace `NAME` with the user-provided name (e.g. `-t digitalclock-dev`).
 
-If a container named `CONTAINER_NAME` already exists, remove it before creating a new one:
+### 4. Remove any existing container (best effort)
+
+Attempt to remove a container with the same name. Do not check first — just run the command and continue regardless of outcome (no error if it does not exist):
 
 ```bash
-docker rm -f CONTAINER_NAME
+docker rm -f NAME || true
 ```
-
-Only run when `docker ps -a --format '{{.Names}}' | grep -x CONTAINER_NAME` matches.
 
 ### 5. Create the container (do not start)
 
-Map host port `8080` to the app (`server.port=8080`). Use `docker create` — **do not** use `docker run`:
+Map host port `8080` to the app (`server.port=8080`). Use the same `NAME` for both the container name and the image reference. Use `docker create` — **do not** use `docker run`:
 
 ```bash
-docker create --name CONTAINER_NAME -p 8080:8080 digitalclock:local
+docker create --name NAME -p 8080:8080 NAME
 ```
 
-Replace `CONTAINER_NAME` with the user-provided name.
+Replace both `NAME` placeholders with the user-provided name.
 
 ### 6. Verify
 
 ```bash
-docker ps -a --filter name=CONTAINER_NAME
+docker ps -a --filter name=NAME
 ```
 
-Report the container name, image (`digitalclock:local`), and that it was created but **not started**. To start it later: `docker start CONTAINER_NAME` → `http://localhost:8080/`.
+Report the container name, image (same `NAME`), and that it was created but **not started**. To start it later: `docker start NAME` → `http://localhost:8080/`.
 
 ## Useful follow-up commands
 
 ```bash
-docker start CONTAINER_NAME
-docker logs -f CONTAINER_NAME
-docker stop CONTAINER_NAME
-docker rm CONTAINER_NAME
+docker start NAME
+docker logs -f NAME
+docker stop NAME
+docker rm NAME
 ```
 
 ## Project specifics
@@ -88,6 +89,6 @@ docker rm CONTAINER_NAME
 | Base image | `eclipse-temurin:17-jre-alpine` |
 | Build platform | `linux/amd64` (required on ARM64 hosts) |
 | Exposed port | `8080` |
-| Image tag | `digitalclock:local` |
+| Image tag | User-supplied `NAME` (same as container name) |
 
 Do not change the `Dockerfile` unless the user asks. Use `docker` CLI commands only (not docker-compose) unless the user requests otherwise.
